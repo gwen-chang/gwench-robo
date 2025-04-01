@@ -1,0 +1,37 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs, unquote
+import urllib.parse
+import queue
+import threading
+from src.config import HTTP_PORT
+
+
+class MyHandler(BaseHTTPRequestHandler):
+    def __init__(self, message_queue, *args, **kwargs):
+        self.message_queue = message_queue
+        super().__init__(*args, **kwargs)
+    def do_GET(self):
+        parsed_url = urlparse(self.path)
+        query_params = parse_qs(parsed_url.query)
+
+        if self.path.startswith("/talk"):
+            if 'text' in query_params:
+                text = query_params['text'][0]
+                # ここでURLデコードを行う
+                text = urllib.parse.unquote(text) #URLデコード処理を追加
+                print(f"受信したテキスト: {text}")
+                self.message_queue.put(text)
+                self.send_response(200)
+                self.send_header("Content-type", "text/plain; charset=utf-8")
+                self.end_headers()
+                self.wfile.write("OK".encode("utf-8"))
+            else:
+                self.send_response(400)
+                self.send_header("Content-type", "text/plain; charset=utf-8")
+                self.end_headers()
+                self.wfile.write("エラー: 'text' パラメータがありません".encode("utf-8"))
+        else:
+            self.send_response(404)
+            self.send_header("Content-type", "text/plain; charset=utf-8")
+            self.end_headers()
+            self.wfile.write("404 Not Found".encode("utf-8"))

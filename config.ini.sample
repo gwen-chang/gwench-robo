@@ -1,0 +1,33 @@
+[DEFAULT]
+http_port = 51002
+; このシステムが受け付けるポート番号
+bouyomi_port = 51003
+; 棒読みちゃんへ送信するポート番号
+api_key = YOUR_API_KEY
+; Gemini API の API キー（ご自身の API キーに置き換えてください）
+persona_file_path = persona.ini
+; ペルソナ設定を記述した persona.ini ファイルのパス
+bouyomi_wait_time_per_char = 0.2
+; 棒読みちゃんに送信する際の1文字当たりの待機時間(秒)
+bouyomi_wait_time_additional = 0.2
+; 棒読みちゃんに送信する際の追加の待機時間(秒)
+gemini_wait_time_per_char = 0.2
+; Gemini API からの応答を送信する際の1文字当たりの待機時間(秒)
+gemini_wait_time_additional = 0.2
+; Gemini API からの応答を送信する際の追加の待機時間(秒)
+
+[HISTORY]
+max_history_length = 10
+; 会話履歴として保持するメッセージの最大件数
+
+[WEB_SOCKET]
+registry_key_path = Software\YukarinetteConnectorNeo
+; WebSocket のポート番号が登録されているレジストリキーのパス（通常は変更不要）
+registry_value_name = WebSocket
+; WebSocket のポート番号が登録されているレジストリ値の名前（通常は変更不要）
+websocket_uri_format = ws://127.0.0.1:{}/textonly
+; WebSocket 接続先の URI フォーマット（通常は変更不要）
+
+[GEMINI_API]
+gemini_api_url_base = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+; Gemini API のベース URL（通常は変更不要）

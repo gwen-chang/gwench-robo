@@ -1,0 +1,13 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+build/
+dist/
+# python
+__pycache__/
+*.pyc
+.env
+.venv/
+config.ini
+資料
