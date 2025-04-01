@@ -1,6 +1,9 @@
 # ぐうぇんちロボ
 視聴者が VTuber 風のキャラクターと対話することができるシステムです
 
+ちゃんと設定するとこんな感じで動く
+https://www.youtube.com/watch?v=Ia9gWBqX1kI
+
 ```mermaid
 graph TD
     subgraph "入力(例)"
@@ -36,9 +39,9 @@ graph TD
 ```
 ## 環境構築
 
-### 1. 設定ファイルの準備
+### 1. ファイルの準備
 
-1.  `config.ini.sample` ファイルをコピーし、`config.ini` に名前を変更します。
+1.  [リリース](https://github.com/gwen-chang/gwench-robo/releases/tag/v1.0)からダウンロードして解凍する
 
 ### 2. 設定ファイルの編集 (`config.ini`)
 
