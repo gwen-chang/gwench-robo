@@ -9,5 +9,15 @@ __pycache__/
 *.pyc
 .env
 .venv/
+
+# PyInstaller
+dist/
+build/
+*.spec
+*.exe
+
+# config
 config.ini
+
+# other
 資料

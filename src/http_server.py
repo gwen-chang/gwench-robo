@@ -1,24 +1,22 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
 import urllib.parse
-import queue
-import threading
-from src.config import HTTP_PORT
+from src.config import get_config_value
 
 
 class MyHandler(BaseHTTPRequestHandler):
     def __init__(self, message_queue, *args, **kwargs):
         self.message_queue = message_queue
         super().__init__(*args, **kwargs)
+
     def do_GET(self):
         parsed_url = urlparse(self.path)
         query_params = parse_qs(parsed_url.query)
 
         if self.path.startswith("/talk"):
             if 'text' in query_params:
-                text = query_params['text'][0]
-                # ここでURLデコードを行う
-                text = urllib.parse.unquote(text) #URLデコード処理を追加
+                # URLエンコードされた文字列をデコード
+                text = unquote(query_params['text'][0])
                 print(f"受信したテキスト: {text}")
                 self.message_queue.put(text)
                 self.send_response(200)

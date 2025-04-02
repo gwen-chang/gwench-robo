@@ -1,38 +1,30 @@
 import time
-from src.config import BOUYOMI_PORT, PERSONA_FILE_PATH
+from src.config import get_config_value
 from src.bouyomi import bouyomi_talk
-from src.gemini_api import gemini_worker,CONVERSATION_PARTNER_NAME #修正箇所
+from src.gemini_api import gemini_worker, CONVERSATION_PARTNER_NAME
 from src.websocket_util import get_websocket_port_from_registry, send_text_to_websocket
-import queue #追加
-from src.persona import load_persona_data #追加
-import html #追加
-from src.history import add_to_history, conversation_history #修正箇所
+import queue
+from src.persona import load_persona_data
+from src.history import add_to_history, conversation_history
+import threading
 
-def escape_html(text):
-    """HTML エスケープを行います。"""
-    return html.escape(text)
-
-def bouyomi_worker(message_queue,persona_file_path,conversation_partner_name):
+def bouyomi_worker(message_queue, persona_file_path, conversation_partner_name, persona_text, stop_event):
     """キューからメッセージを取得し、棒読みちゃんに送信します。"""
-    while True:
+    while not stop_event.is_set():  # 終了フラグが立っていない間ループを続ける
         try:
-            input_text = message_queue.get(block=True)
+            input_text = message_queue.get(block=True, timeout=0.1) #タイムアウトを0.1秒に設定
             # 会話履歴の更新(キューからのメッセージ)
-            persona_text = load_persona_data(persona_file_path)
-            #エスケープ処理
-            input_text = escape_html(input_text) #追加
-            persona_text = escape_html(persona_text) #追加
-            add_to_history(conversation_partner_name,input_text)
+            add_to_history(conversation_partner_name, input_text)
 
-            bouyomi_time = bouyomi_talk(input_text, port=BOUYOMI_PORT)
+            bouyomi_time = bouyomi_talk(input_text, port=get_config_value('BOUYOMI_PORT'))
             time.sleep(bouyomi_time)
             websocket_port = get_websocket_port_from_registry()
-            gemini_worker(input_text, persona_text, conversation_history,websocket_port,send_text_to_websocket,BOUYOMI_PORT,bouyomi_talk,conversation_partner_name)
+            gemini_worker(input_text, persona_text, conversation_history, websocket_port, send_text_to_websocket, get_config_value('BOUYOMI_PORT'), bouyomi_talk, conversation_partner_name)
             message_queue.task_done()
 
         except queue.Empty:
-            print("キューが空です。")
-            message_queue.task_done()
+            pass # キューが空の場合は何もしない
         except Exception as e:
             print(f"予期せぬエラーが発生しました: {e}")
             message_queue.task_done()
+    print("bouyomi_worker スレッドを終了します。")

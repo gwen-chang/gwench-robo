@@ -1,17 +1,19 @@
 [DEFAULT]
 http_port = 51002
 ; このシステムが受け付けるポート番号
-bouyomi_port = 51003
+bouyomi_port = 50080
 ; 棒読みちゃんへ送信するポート番号
 api_key = YOUR_API_KEY
 ; Gemini API の API キー（ご自身の API キーに置き換えてください）
 persona_file_path = persona.ini
 ; ペルソナ設定を記述した persona.ini ファイルのパス
-bouyomi_wait_time_per_char = 0.2
+bouyomi_wait_time_per_char = 0.17
 ; 棒読みちゃんに送信する際の1文字当たりの待機時間(秒)
 bouyomi_wait_time_additional = 0.2
 ; 棒読みちゃんに送信する際の追加の待機時間(秒)
-gemini_wait_time_per_char = 0.2
+max_bouyomi_char = 60
+; 棒読みちゃん読み上げの最大文字数
+gemini_wait_time_per_char = 0.17
 ; Gemini API からの応答を送信する際の1文字当たりの待機時間(秒)
 gemini_wait_time_additional = 0.2
 ; Gemini API からの応答を送信する際の追加の待機時間(秒)

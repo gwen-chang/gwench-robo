@@ -1,18 +1,13 @@
 import requests
 import json
 import re
-from src.config import API_KEY, GEMINI_API_URL_BASE, GEMINI_WAIT_TIME_PER_CHAR, GEMINI_WAIT_TIME_ADDITIONAL
+from src.config import get_api_key, get_config_value
 from src.history import add_to_history, conversation_history
 import time
 import asyncio
-import html #追加
 
 MY_NAME = "自身"  # 自身の名前
 CONVERSATION_PARTNER_NAME = "会話相手" #会話相手の名前
-
-def escape_html(text):
-    """HTML エスケープを行います。"""
-    return html.escape(text)
 
 def get_gemini_response(api_key, prompt):
     """Gemini API にリクエストを送信し、応答を取得します。"""
@@ -20,7 +15,7 @@ def get_gemini_response(api_key, prompt):
         print("エラー: APIキーが設定されていません。")
         return None, "APIキーエラー"
 
-    url = f"{GEMINI_API_URL_BASE}?key={api_key}"
+    url = f"{get_config_value('GEMINI_API_URL_BASE')}?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     data = {"contents": [{"parts": [{"text": prompt}]}]}
 
@@ -62,12 +57,10 @@ def handle_gemini_response(gemini_response):
   print(f"Gemini APIからの応答: {gemini_response}")
   # コンソールに出力
   print(f"コンソール出力: {gemini_response}")
-  # 感嘆符が含まれている場合は削除
-  gemini_response = re.sub(r'!', '', gemini_response)
   # _が含まれている場合スペースに戻す
   gemini_response = re.sub(r'_', ' ', gemini_response)
-  #HTMLエスケープ
-  gemini_response = escape_html(gemini_response) #追加
+  # 例2: 「\n」を半角スペースに置換
+  gemini_response = gemini_response.replace("\n", " ")
 
   return gemini_response
 
@@ -78,14 +71,11 @@ def send_gemini_prompt(persona_text,input_text, conversation_history,conversatio
     if conversation_history:
         history_text += "以下は、今までの会話内容です。\n\n会話履歴:\n"
         for item in conversation_history:
-            history_text += f"{item['speaker']}: {escape_html(item['text'])}\n" #変更箇所
+            history_text += f"{item['speaker']}: {item}\n"
         history_text += "\n"
-    #HTMLエスケープ
-    persona_text = escape_html(persona_text)
-    input_text = escape_html(input_text)
 
     gemini_prompt = f"{persona_text}\n\n{history_text}\n\n現在の会話:\n{conversation_partner}: {input_text}\n{my_name}:"
-    gemini_response, error_message = get_gemini_response(API_KEY, gemini_prompt)
+    gemini_response, error_message = get_gemini_response(get_api_key(), gemini_prompt)
     return gemini_response, error_message
 
 def gemini_worker(input_text, persona_text, conversation_history,websocket_port,send_text_to_websocket,bouyomi_port,bouyomi_talk,conversation_partner):
@@ -102,4 +92,4 @@ def gemini_worker(input_text, persona_text, conversation_history,websocket_port,
 
         send_text = asyncio.run(send_text_to_websocket(websocket_port, text))
         if send_text:
-          time.sleep(len(send_text) * GEMINI_WAIT_TIME_PER_CHAR + GEMINI_WAIT_TIME_ADDITIONAL)
+          time.sleep(len(send_text) * get_config_value('GEMINI_WAIT_TIME_PER_CHAR') + get_config_value('GEMINI_WAIT_TIME_ADDITIONAL'))
