@@ -52,7 +52,9 @@ def main():
     # HTTPポートが使用可能か確認
     http_port = get_config_value('HTTP_PORT')
     if not check_port_availability(http_port):
-        print(f"エラー: HTTPポート {http_port} はすでに使用されています。config.ini で別のポートを指定してください。")
+        print(f"エラー: HTTPポート {http_port} はすでに使用されています。")
+        print("config.ini で別のポートを指定し、再度実行してください。")
+        input("何かキーを押すと終了します...")  # ユーザーがキーを押すまで待機
         sys.exit(1)  # エラー終了
 
     try:
@@ -61,7 +63,9 @@ def main():
     except OSError as e:
         print(f"エラー: HTTPサーバーの起動に失敗しました: {e}")
         if "Address already in use" in str(e):
-            print(f"HTTPポート {http_port} はすでに使用されています。config.ini で別のポートを指定してください。")
+            print(f"HTTPポート {http_port} はすでに使用されています。")
+            print("config.ini で別のポートを指定し、再度実行してください。")
+        input("何かキーを押すと終了します...")  # ユーザーがキーを押すまで待機
         sys.exit(1)
 
     # 初期ペルソナを読み込む
