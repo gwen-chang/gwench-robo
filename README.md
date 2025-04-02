@@ -41,7 +41,7 @@ graph TD
 
 ### 1. ファイルの準備
 
-1.  [リリース](https://github.com/gwen-chang/gwench-robo/releases/tag/v1.0)からダウンロードして解凍する
+1.  [リリース](https://github.com/gwen-chang/gwench-robo/releases)からgwench-robo.zipをダウンロードして解凍する
 
 ### 2. 設定ファイルの編集 (`config.ini`)
 
